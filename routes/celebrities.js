@@ -1,21 +1,42 @@
-// starter code in both routes/celebrities.routes.js and routes/movies.routes.js
 const router = require("express").Router();
+const Celebrity = require("../models/Celebrity.model");
 
-// all your routes here
+//==== Create route to /celebrities
 router.get("/", (req, res, next) => {
-    Celebrities.find()
-      .populate("celebrities")
-      .then( celebritiesFromDB => {
-  
-        console.log(celebritiesFromDB);
-  
-        // res.send("here we will display the list of books")
-        res.render("celebrities/celebrities-list", {celebrities: celebritiesFromDB});
-      })
-      .catch(err => {
-          console.log ("Bad things happend and we kinda lost the data ....", err)
-      });
-  });
+  Celebrity.find()
+    .then((celebFromDB) => {
+      res.render("celebrities/celebrities-list", { celebrity: celebFromDB });
+    })
+    .catch();
+});
 
-  
-  module.exports = router;
+//===== Create GET-route for /celebrities/new-celebrity
+router.get("/new-celebrity", (req, res, next) => {
+  Celebrity.find()
+    .then((celebrityDetails) => {
+      res.render("celebrities/new-celebrity", { celebrity: celebrityDetails });
+    })
+    .catch((err) => {
+      console.log("Error getting celeb details from DB...", err);
+    });
+});
+
+// ===== Create POST-route for celeb/new-celebrity submit page
+router.post("/new-celebrity", (req, res, next) => {
+  const { name, occupation, catchPhrase } = req.body;
+  const celebrityDetails = req.body;
+
+  Celebrity.create(celebrityDetails)
+    .then(() => {
+      res.redirect("/celebrities");
+    })
+    .catch((err) => {
+      console.log("Error creating new celeb..", err);
+    });
+});
+
+
+
+
+
+module.exports = router;
